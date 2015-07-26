@@ -14,10 +14,13 @@ exports.load = function(req,res,next,commentId){
 };
 
 exports.new = function(req,res){
+	req.session.user.last = Date.now();
 	res.render('comments/new.ejs',{quizid: req.params.quizId,errors:[]});
 };
 
 exports.create = function(req,res){
+	req.session.user.last = Date.now();
+
 	var comment = models.Comment.build(
 		{
 			texto: req.body.comment.texto,
@@ -37,6 +40,8 @@ exports.create = function(req,res){
 
 exports.publish = function(req,res){
 	req.comment.publicado = true;
+	
+	req.session.user.last = Date.now();
 
 	req.comment.save({fields:["publicado"]}).then(function(){
 		res.redirect('/quizes/'+req.params.quizId);

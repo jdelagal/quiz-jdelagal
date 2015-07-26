@@ -18,7 +18,7 @@ exports.create = function(req,res){
 			return;
 		}
 
-		req.session.user = {id:user.id, username:user.username};
+		req.session.user = {id:user.id, username:user.username,last:Date.now()};
 		res.redirect(req.session.redir.toString());
 	});
 };
@@ -31,6 +31,24 @@ exports.destroy = function(req,res){
 exports.loginRequired = function(req,res,next){
 	if(req.session.user){
 		next();
+	}else{
+		res.redirect('/login');
+	}
+};
+
+exports.checkSession = function(req,res,next){
+	var now = Date.now();
+	var diff=0;
+	var last;
+
+	if(req.session.user){
+		last = new Date(req.session.user.last);
+		diff = now - last;
+		if(diff > 120000 ){
+			res.redirect('/logout');
+		}else{
+			next();
+		}
 	}else{
 		res.redirect('/login');
 	}
