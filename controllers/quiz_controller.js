@@ -1,7 +1,10 @@
 var models = require('../models/model.js');
 
 exports.load = function(req,res,next,quizId){
-	models.Quiz.find(req.params.quizId).then(function(quiz){
+	models.Quiz.find({
+		where: {id: Number(quizId)},
+		include: [{model: models.Comment}]
+	}).then(function(quiz){
 		if(quiz){
 			req.quiz = quiz;
 			next();
